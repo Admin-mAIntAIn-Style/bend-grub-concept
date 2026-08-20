@@ -195,36 +195,47 @@
 
   /* ---------- Back to top ---------- */
   /* Spatula icon, 2026-08-20 (George: "use it for the back to top icon").
-     Same pill-button treatment as .lang-toggle (dark glass, cream border,
-     backdrop blur) so it reads as part of the same fixed-UI family, just
-     bottom-right instead of top-right. Hidden until the page scrolls past
-     roughly one screen, per the standard back-to-top pattern. */
+     First pass wrapped it in a dark-glass circle pill like .lang-toggle --
+     George corrected that: "I didn't say add a circle behind the spatula.
+     Remove it. It should be just the spatula and a little larger. Look at
+     the other sites. It needs to follow the same animation and size.
+     CONTINUITY with our building style." Matched exactly to the house
+     pattern from Fat Tony's site_common.py back_to_top() (bare brand icon,
+     no circle -- "Fat Tony's pizza-slice pattern"): no background/border,
+     a drop-shadow instead of a boxed treatment, and the same reveal
+     animation -- hidden state kicked out and tilted
+     (translateY(16px) rotate(-15deg)), settles in on scroll
+     (translateY(0) rotate(0deg)), and kicks up with a playful over-rotate +
+     scale on hover. Same 54px footprint as the house default too. The
+     spatula's own rotate(135deg) (handle pointing up) lives on the inner
+     svg, same as how Fat Tony's back_to_top() puts TOTOP_ICON_ROTATE on the
+     <img> itself rather than the button -- keeps the icon's fixed
+     orientation independent of the button's reveal/hover transforms. */
   .back-to-top {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 50;
-    width: 52px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(21,15,10,0.6);
-    border: 1px solid rgba(244,232,214,0.4);
-    border-radius: 50%;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    width: 54px;
+    height: 54px;
+    background: none;
+    border: 0;
+    padding: 0;
     cursor: pointer;
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
     opacity: 0;
-    transform: translateY(8px);
     pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease, border-color 0.15s ease;
+    transform: translateY(16px) rotate(-15deg);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
   }
-  .back-to-top.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  .back-to-top:hover { background: rgba(21,15,10,0.85); border-color: var(--gold); transform: translateY(-2px); }
+  .back-to-top.is-visible { opacity: 1; pointer-events: auto; transform: translateY(0) rotate(0deg); }
+  .back-to-top.is-visible:hover {
+    transform: translateY(-3px) rotate(12deg) scale(1.12);
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  }
   .back-to-top svg {
-    width: 24px;
-    height: 24px;
+    width: 100%;
+    height: 100%;
     display: block;
     transform: rotate(135deg);
     transform-origin: center;
@@ -237,6 +248,15 @@
     text-shadow: 0 4px 18px rgba(0,0,0,0.5);
     margin-bottom: 18px;
     letter-spacing: 0.5px;
+  }
+  /* 2026-08-20 (George: "Make 'Bite Into Bend.' in the hero twice as big on
+     desktop. It's fine on mobile."). The base rule above is untouched so
+     mobile (<=760px, where 4.2vw already sits under the 28px floor on any
+     phone width) renders byte-identical to before. This only kicks in
+     above the mobile breakpoint, doubling the ~52px desktop-capped size to
+     ~104px. */
+  @media (min-width: 761px) {
+    .tagline { font-size: 104px; }
   }
   .hero-sub {
     max-width: 560px;
@@ -418,7 +438,9 @@
     color: var(--cream);
     margin-bottom: 16px;
   }
-  .order-cta p { color: var(--muted); margin-bottom: 34px; font-size: 16px; }
+  /* font-weight bumped 2026-08-20 (George: "Make 'Order now and bite into
+     Bend.' text bold."). */
+  .order-cta p { color: var(--muted); margin-bottom: 34px; font-size: 16px; font-weight: 700; }
   .order-cta .btn-row { justify-content: center; }
 
   /* ---------- Footer ---------- */
@@ -1047,16 +1069,12 @@ C484,220.44,477.04,209.88,466.672,209.88z"/>
     });
   })();
   (function () {
+    // Same 320px scroll threshold as the house back_to_top() pattern
+    // (Fat Tony's site_common.py) -- continuity, not a per-viewport guess.
     var topBtn = document.getElementById('backToTop');
-    var toggleVisible = function () {
-      if (window.scrollY > window.innerHeight * 0.6) {
-        topBtn.classList.add('is-visible');
-      } else {
-        topBtn.classList.remove('is-visible');
-      }
-    };
-    window.addEventListener('scroll', toggleVisible, { passive: true });
-    toggleVisible();
+    window.addEventListener('scroll', function () {
+      topBtn.classList.toggle('is-visible', window.scrollY > 320);
+    }, { passive: true });
     topBtn.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
