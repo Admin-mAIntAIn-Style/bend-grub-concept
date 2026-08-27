@@ -510,7 +510,13 @@
   footer .social-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; color: var(--muted); transition: color 0.2s ease, transform 0.2s ease; }
   footer .social-icon:hover { color: var(--cream); transform: translateY(-2px); }
   footer .social-icon svg { width: 20px; height: 20px; }
-  footer .copyright { color: rgba(205,185,153,0.55); font-size: 12.5px; }
+  footer .copyright { color: rgba(205,185,153,0.55); font-size: 12.5px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  /* Agency credit link -- added 2026-08-27 (George: "NO link to US!!!!").
+     Bend Grub's footer had never gotten the mAIntAIn Style credit line that
+     Fat Tony's and the house template both carry (site_common.py .maintain-credit
+     pattern) -- ports that same markup/style here so every client site links
+     back to maintain.style. */
+  footer .copyright .maintain-credit a { color: var(--gold); font-weight: 700; opacity: 1; }
 
   @media (max-width: 760px) {
     .hero-inner { padding: 70px 20px 70px; }
@@ -1100,7 +1106,10 @@ C484,220.44,477.04,209.88,466.672,209.88z"/>
         <a href="https://www.instagram.com/z_grub_burgerz/" class="social-icon" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></a>
         <span><span class="i18n" data-es="Síguenos">Follow along</span> &mdash; <a href="https://www.instagram.com/z_grub_burgerz/" target="_blank" rel="noopener">@z_grub_burgerz</a></span>
       </div>
-      <div class="copyright"><span class="i18n" data-es="© 2026 Bend Grub. Bend, Oregon.">&copy; 2026 Bend Grub. Bend, Oregon.</span></div>
+      <div class="copyright">
+        <span><span class="i18n" data-es="© 2026 Bend Grub. Bend, Oregon.">&copy; 2026 Bend Grub. Bend, Oregon.</span></span>
+        <span class="maintain-credit" data-es-html='Sitio construido y mantenido con <a href="https://maintain.style" target="_blank" rel="noopener">mAIntAIn Style</a>'>Site built &amp; maintained with <a href="https://maintain.style" target="_blank" rel="noopener">mAIntAIn Style</a></span>
+      </div>
     </div>
   </footer>
 
@@ -1140,6 +1149,15 @@ C484,220.44,477.04,209.88,466.672,209.88z"/>
       document.querySelectorAll('.i18n').forEach(function (el) {
         if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
         el.innerHTML = lang === 'es' ? el.dataset.es : el.dataset.en;
+      });
+      /* [data-es-html] -- same pattern as Fat Tony's / house site_common.py
+         lang_script(), for footer strings (like the maintain-credit line)
+         that need to keep a real <a> tag rather than the plain-text-only
+         .i18n/data-es swap above. Added 2026-08-27 alongside the credit link
+         itself (George: "NO link to US!!!!"). */
+      document.querySelectorAll('[data-es-html]').forEach(function (el) {
+        if (el.dataset.enHtml === undefined) el.dataset.enHtml = el.innerHTML;
+        el.innerHTML = lang === 'es' ? el.dataset.esHtml : el.dataset.enHtml;
       });
       document.documentElement.setAttribute('lang', lang);
       btn.textContent = lang === 'es' ? 'ENG' : 'ESP';
